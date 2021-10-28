@@ -59,6 +59,14 @@ void loop(){
     // Check humidity
     double humidity = dht.readHumidity();
 
+
+    Serial.print("Ultrasonic Distance: ");
+    Serial.println(ultrasonic_distance);
+    Serial.print("Temperature: ");
+    Serial.println(temperature);
+    Serial.print("Humidity: ");
+    Serial.println(humidity);
+    
     // Check conditions
 
     // If the conditions inside the lab are not hazardous
@@ -81,7 +89,7 @@ void loop(){
         door_actions(false);
     }
 
-        
+    delay(500);        
     
 }
 
@@ -123,19 +131,23 @@ void door_actions(bool doorOpen){
 }
 
 void openDoor()
-{
+{   
+    Serial.println("Opening door");
 	digitalWrite(MOTOR_PIN1, HIGH);
 	digitalWrite(MOTOR_PIN2, LOW);
 	delay(MOTOR_DELAY);
 	digitalWrite(MOTOR_PIN1, LOW);
+    Serial.println("Door opened");
 }
 
 void closeDoor()
 {
+    Serial.println("Closing door");
 	digitalWrite(MOTOR_PIN2, HIGH);
 	digitalWrite(MOTOR_PIN1, LOW);
 	delay(MOTOR_DELAY);
 	digitalWrite(MOTOR_PIN2, LOW);
+    Serial.println("Door closed");
 }
 
 // Sensor funcitons
