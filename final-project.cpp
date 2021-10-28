@@ -10,6 +10,8 @@
 // Temperature
 #define TEMPERATURE_SENSOR_PIN A0
 
+// Humidity
+#define DHT_SENSOR_PIN A1
 
 
 /////////////////////////////////////////
@@ -17,6 +19,8 @@
 #define MOTOR_DELAY 1000
 #define HAZARD_MIN_TEMP 20
 #define HAZARD_MAX_TEMP 27
+#define HAZARD_MIN_HUMIDITY 40
+#define HAZARD_MAX_HUMIDITY 50
 #define ULTRASONIC_MAX_DISTANCE 50
 
 /////////////////////////////////////////
@@ -28,6 +32,10 @@ bool isDoorClosed = true;
 
 /////////////////////////////////////////
 
+#include "DHT.h"
+
+DHT dht(DHT_SENSOR_PIN, DHT11);
+
 void setup(){
 
     init_motor();
@@ -35,7 +43,7 @@ void setup(){
     init_temperature();
 
     Serial.begin(9600);
-    
+    dht.begin();
 }
 
 
@@ -48,10 +56,13 @@ void loop(){
     // Check temperature
     double temperature = get_temperature();
 
+    // Check humidity
+    double humidity = dht.readHumidity();
+
     // Check conditions
 
     // If the conditions inside the lab are not hazardous
-    if(!is_hazardous(temperature)){
+    if(!is_hazardous(temperature, humidity)){
         
         // If someone is in close range of door
         if(is_in_range(ultrasonic_distance)){
@@ -74,9 +85,12 @@ void loop(){
     
 }
 
-bool is_hazardous(double temperature){
+bool is_hazardous(double temperature, double humidity){
     // Safe condition is when temperature is between HAZARD_MIN_TEMP and HAZARD_MAX_TEMP.
-    return !(temperature > HAZARD_MIN_TEMP && temperature < HAZARD_MAX_TEMP);
+    return !(
+        temperature > HAZARD_MIN_TEMP && temperature < HAZARD_MAX_TEMP |
+        humidity > HAZARD_MIN_HUMIDITY && humidity < HAZARD_MAX_HUMIDITY
+        );
 }
 
 bool is_in_range(double ultrasonic_distance){
