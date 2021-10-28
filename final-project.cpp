@@ -15,6 +15,9 @@
 /////////////////////////////////////////
 // Other Constants
 #define MOTOR_DELAY 1000
+#define HAZARD_MIN_TEMP 20
+#define HAZARD_MAX_TEMP 27
+#define ULTRASONIC_MAX_DISTANCE 50
 
 /////////////////////////////////////////
 
@@ -72,13 +75,13 @@ void loop(){
 }
 
 bool is_hazardous(double temperature){
-    // Safe condition is when temperature is between 20 and 30 C.
-    return !(temperature > 20 && temperature < 30);
+    // Safe condition is when temperature is between HAZARD_MIN_TEMP and HAZARD_MAX_TEMP.
+    return !(temperature > HAZARD_MIN_TEMP && temperature < HAZARD_MAX_TEMP);
 }
 
 bool is_in_range(double ultrasonic_distance){
-    // If the distance is less than 100 cm, return true
-    return (ultrasonic_distance < 100);
+    // If the distance is less than ULTRASONIC_MAX_DISTANCE, return true
+    return (ultrasonic_distance < ULTRASONIC_MAX_DISTANCE);
 }
 
 // Action funcitons
