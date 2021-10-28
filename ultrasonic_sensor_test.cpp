@@ -1,9 +1,24 @@
+// Pins
+// Motor
 #define MOTOR_PIN1 5
 #define MOTOR_PIN2 6
-#define MOTOR_DELAY 1000
 
+// Ultrasonic
 #define ULTRASONIC_TRIGGER_PIN 8
 #define ULTRASONIC_ECHO_PIN 7
+
+// Temperature
+#define TEMPERATURE_SENSOR_PIN A0
+
+
+
+/////////////////////////////////////////
+// Other Constants
+#define MOTOR_DELAY 1000
+
+/////////////////////////////////////////
+
+
 
 long microsecondsToCentimeters(long microseconds) {
    return microseconds / 29 / 2;
