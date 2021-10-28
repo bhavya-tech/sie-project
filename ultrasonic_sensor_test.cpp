@@ -29,6 +29,10 @@ void setup()
     init_ultrasonic();
     Serial.begin(9600); // Starting Serial Terminal
 }
+long microsecondsToCentimeters(long microseconds)
+{
+    return microseconds / 29 / 2;
+}
 
 long get_ultrasonic_distance()
 {
