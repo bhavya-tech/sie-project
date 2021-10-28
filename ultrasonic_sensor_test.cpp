@@ -10,29 +10,28 @@
 // Temperature
 #define TEMPERATURE_SENSOR_PIN A0
 
-
-
 /////////////////////////////////////////
 // Other Constants
 #define MOTOR_DELAY 1000
 
 /////////////////////////////////////////
 
-
-
-long microsecondsToCentimeters(long microseconds) {
-   return microseconds / 29 / 2;
-}
-
-void setup() {
-
+void init_ultrasonic()
+{
     pinMode(ULTRASONIC_TRIGGER_PIN, OUTPUT);
     pinMode(ULTRASONIC_ECHO_PIN, INPUT);
+}
 
+
+
+void setup()
+{
+    init_ultrasonic();
     Serial.begin(9600); // Starting Serial Terminal
 }
 
-long getDistance() {
+long get_ultrasonic_distance()
+{
     long duration, distance;
 
     digitalWrite(ULTRASONIC_TRIGGER_PIN, LOW);
@@ -49,11 +48,10 @@ long getDistance() {
     return distance;
 }
 
-void loop(){
+void loop()
+{
 
-    long cm = getDistance();
+    long cm = get_ultrasonic_distance();
     Serial.println(cm);
     delay(100);
 }
-
-

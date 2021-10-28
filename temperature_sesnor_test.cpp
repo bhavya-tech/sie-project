@@ -19,7 +19,7 @@
 /////////////////////////////////////////
 
 
-double getTemperature(){
+double get_temperature(){
     int sensor_input = analogRead(TEMPERATURE_SENSOR_PIN);
     double temperature;
     temperature = (double)sensor_input / 1024;       //find percentage of input reading
@@ -30,13 +30,17 @@ double getTemperature(){
     return temperature;
 }
 
-void setup(){
+void init_temperature(){
     pinMode(TEMPERATURE_SENSOR_PIN, INPUT);
+}
+
+void setup(){
+    init_temperature();
     Serial.begin(9600);
 }
 
 void loop(){
-    double temperature = getTemperature();
+    double temperature = get_temperature();
     Serial.print("Temperature: ");
     Serial.print(temperature);
     Serial.println(" C");
