@@ -37,14 +37,13 @@ void setup(){
 
 
 void loop(){
-    // Check confitions of peripherals
+    // Check conditions of peripherals
+
     // Check ultrasonic
     long ultrasonic_distance = get_ultrasonic_distance();
 
     // Check temperature
     double temperature = get_temperature();
-
-    bool openDoor = false;
 
     // Check conditions
 
@@ -55,6 +54,8 @@ void loop(){
         if(is_in_range(ultrasonic_distance)){
             door_actions(true);
         }
+
+        // If no one in range, close the door
         else{
             door_actions(false);
         }
@@ -62,26 +63,34 @@ void loop(){
 
     // If conditions in lab are hazardous
     else{
-
+        // Keep the door closed
+        door_actions(false);
     }
+
         
     
 }
 
 bool is_hazardous(double temperature){
-    return (temperature > 20 && temperature < 30);
+    // Safe condition is when temperature is between 20 and 30 C.
+    return !(temperature > 20 && temperature < 30);
 }
 
 bool is_in_range(double ultrasonic_distance){
-    return (ultrasonic_distance < 50);
+    // If the distance is less than 100 cm, return true
+    return (ultrasonic_distance < 100);
 }
 
 // Action funcitons
 void door_actions(bool doorOpen){
     if(isDoorClosed){
+        // If door is closed, open it
         if(doorOpen){
             openDoor();
             isDoorClosed = false;
+        }
+        else{
+            // If door is already closed state and it is requested to close, do nothing
         }
     }
     
@@ -89,6 +98,9 @@ void door_actions(bool doorOpen){
         if(!doorOpen){
             closeDoor();
             isDoorClosed = true;
+        }
+        else{
+            // If door is already open state and it is requested to open, do nothing
         }
     }
 }
