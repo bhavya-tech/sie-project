@@ -4,6 +4,9 @@
 #define MOTOR_PIN2 6
 #define MOTOR_DELAY 1000
 
+#define ULTRASONIC_TRIGGER_PIN 8
+#define ULTRASONIC_ECHO_PIN 7
+
 
 void setup()   {                
   
