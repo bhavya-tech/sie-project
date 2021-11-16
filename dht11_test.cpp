@@ -25,13 +25,28 @@
 
 DHT dht(DHT_SENSOR_PIN, DHT11);
 
-void setup(){
-    Serial.begin(9600);
-    
+void init_dht(){
     dht.begin();
 }
 
+void setup(){
+    Serial.begin(9600);
+    init_dht();
+}
+
+float getTemperature(){
+    return dht.readTemperature();
+}
+
+float getHumidity(){
+    return dht.readHumidity();
+}
+
 void loop(){
-    float h = dht.readHumidity();
-    Serial.println(h);
+    Serial.print("Temperature: ");
+    Serial.print(getTemperature());
+    Serial.print("\tHumidity: ");
+    Serial.print(getHumidity());
+    Serial.println();
+    delay(1000);
 }

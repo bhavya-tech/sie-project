@@ -8,7 +8,7 @@
 #define ULTRASONIC_ECHO_PIN 7
 
 // Temperature
-#define TEMPERATURE_SENSOR_PIN A0
+// #define TEMPERATURE_SENSOR_PIN A0
 
 // Humidity
 #define DHT_SENSOR_PIN A1
@@ -25,6 +25,10 @@
 
 /////////////////////////////////////////
 
+/////////////////////////////////////////
+
+#define USING_SERVO_MOTOR true
+
 //Global Variables
 
 bool isDoorClosed = true;
@@ -32,18 +36,23 @@ bool isDoorClosed = true;
 
 /////////////////////////////////////////
 
+
 #include "DHT.h"
 
 DHT dht(DHT_SENSOR_PIN, DHT11);
+
+#include <Servo.h>
+
+Servo servoMotor;
 
 void setup(){
 
     init_motor();
     init_ultrasonic();
-    init_temperature();
+    //init_temperature();
+    init_dht();
 
     Serial.begin(9600);
-    dht.begin();
 }
 
 
@@ -54,10 +63,10 @@ void loop(){
     long ultrasonic_distance = get_ultrasonic_distance();
 
     // Check temperature
-    double temperature = get_temperature();
+    double temperature = getTemperature();
 
     // Check humidity
-    double humidity = dht.readHumidity();
+    double humidity = getHumidity();
 
 
     Serial.print("Ultrasonic Distance: ");
@@ -132,23 +141,49 @@ void door_actions(bool doorOpen){
 
 void openDoor()
 {   
-    Serial.println("Opening door");
-	digitalWrite(MOTOR_PIN1, HIGH);
-	digitalWrite(MOTOR_PIN2, LOW);
-	delay(MOTOR_DELAY);
-	digitalWrite(MOTOR_PIN1, LOW);
-    Serial.println("Door opened");
+    if(USING_SERVO_MOTOR)
+    {
+        servo_open();
+    }
+    else{
+        // Open the door
+        Serial.println("Opening door");
+        digitalWrite(MOTOR_PIN1, HIGH);
+        digitalWrite(MOTOR_PIN2, LOW);
+        delay(MOTOR_DELAY);
+        digitalWrite(MOTOR_PIN1, LOW);
+        Serial.println("Door opened");
+
+    }
 }
 
 void closeDoor()
 {
-    Serial.println("Closing door");
-	digitalWrite(MOTOR_PIN2, HIGH);
-	digitalWrite(MOTOR_PIN1, LOW);
-	delay(MOTOR_DELAY);
-	digitalWrite(MOTOR_PIN2, LOW);
-    Serial.println("Door closed");
+    if(USING_SERVO_MOTOR)
+    {
+        servo_close();
+    }
+    else{
+        // Close the door
+
+        Serial.println("Closing door");
+        digitalWrite(MOTOR_PIN2, HIGH);
+        digitalWrite(MOTOR_PIN1, LOW);
+        delay(MOTOR_DELAY);
+        digitalWrite(MOTOR_PIN2, LOW);
+        Serial.println("Door closed");
+    }
 }
+
+void servo_open(){
+    servoMotor.write(90);
+}
+
+void servo_close(){
+    servoMotor.write(0);
+}
+
+
 
 // Sensor funcitons
 
@@ -172,15 +207,12 @@ long get_ultrasonic_distance()
 }
 
 // Temperature
-double get_temperature(){
-    int sensor_input = analogRead(TEMPERATURE_SENSOR_PIN);
-    double temperature;
-    temperature = (double)sensor_input / 1024;       //find percentage of input reading
-    temperature = temperature * 5;                 //multiply by 5V to get voltage
-    temperature = temperature - 0.5;               //Subtract the offset 
-    temperature = temperature * 100;
-    
-    return temperature;
+float getTemperature(){
+    return dht.readTemperature();
+}
+
+float getHumidity(){
+    return dht.readHumidity();
 }
 
 
@@ -192,9 +224,9 @@ long microsecondsToCentimeters(long microseconds)
 }
 
 // Init funcitons
-void init_temperature(){
-    pinMode(TEMPERATURE_SENSOR_PIN, INPUT);
-}
+// void init_temperature(){
+//     pinMode(TEMPERATURE_SENSOR_PIN, INPUT);
+// }
 void init_motor()
 {
 	pinMode(MOTOR_PIN1, OUTPUT);
@@ -204,4 +236,7 @@ void init_ultrasonic()
 {
     pinMode(ULTRASONIC_TRIGGER_PIN, OUTPUT);
     pinMode(ULTRASONIC_ECHO_PIN, INPUT);
+}
+void init_dht(){
+    dht.begin();
 }

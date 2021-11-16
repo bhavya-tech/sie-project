@@ -18,20 +18,24 @@
 
 /////////////////////////////////////////
 
+#include "DHT.h"
+DHT dht(TEMPERATURE_SENSOR_PIN, DHT11)
+
 
 double get_temperature(){
-    int sensor_input = analogRead(TEMPERATURE_SENSOR_PIN);
-    double temperature;
-    temperature = (double)sensor_input / 1024;       //find percentage of input reading
-    temperature = temperature * 5;                 //multiply by 5V to get voltage
-    temperature = temperature - 0.5;               //Subtract the offset 
-    temperature = temperature * 100;
-    
+    // int sensor_input = analogRead(TEMPERATURE_SENSOR_PIN);
+    // double temperature;
+    // temperature = (double)sensor_input / 1024;       //find percentage of input reading
+    // temperature = temperature * 5;                 //multiply by 5V to get voltage
+    // temperature = temperature - 0.5;               //Subtract the offset 
+    // temperature = temperature * 100;
+    float temperature = dht.readTemperature();
     return temperature;
 }
 
 void init_temperature(){
-    pinMode(TEMPERATURE_SENSOR_PIN, INPUT);
+    // pinMode(TEMPERATURE_SENSOR_PIN, INPUT);
+    dht.begin();
 }
 
 void setup(){
