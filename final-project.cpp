@@ -1,22 +1,18 @@
 // Pins
-// Motor
-#define MOTOR_PIN1 5
-#define MOTOR_PIN2 6
 
+// Servo motor
 #define SERVO_MOTOR_PIN 6
 
 // Ultrasonic
 #define ULTRASONIC_TRIGGER_PIN 8
 #define ULTRASONIC_ECHO_PIN 7
 
-// Temperature
-// #define TEMPERATURE_SENSOR_PIN A0
-
-// Humidity
+// Temperature and Humidity
 #define DHT_SENSOR_PIN A1
 
 
 /////////////////////////////////////////
+
 // Other Constants
 #define MOTOR_DELAY 1000
 #define HAZARD_MIN_TEMP 20
@@ -25,17 +21,12 @@
 #define HAZARD_MAX_HUMIDITY 50
 #define ULTRASONIC_MAX_DISTANCE 20
 
-
-/////////////////////////////////////////
-
-/////////////////////////////////////////
-
-#define USING_SERVO_MOTOR 1
-
 #define LOOP_DELAY_MS 1000
 
-//Global Variables
+/////////////////////////////////////////
 
+
+//Global Variables
 bool isDoorClosed = true;
 
 
@@ -52,17 +43,25 @@ Servo servoMotor;
 
 void setup(){
 
+    // Initialize the servo motor
     init_servo();
+
+    // Initialize the ultrasonic sensor
     init_ultrasonic();
-    //init_temperature();
+
+    // Initialize the temperature and humidity sensor
     init_dht();
 
+    // Begin serial communication
     Serial.begin(9600);
 }
 
 
 void loop(){
-    // Check conditions of peripherals
+    
+    /* 
+        Check conditions of peripherals
+    */
 
     // Check ultrasonic
     long ultrasonic_distance = get_ultrasonic_distance();
@@ -74,6 +73,7 @@ void loop(){
     double humidity = getHumidity();
 
 
+    // Print readings from peripherals
     Serial.print("Ultrasonic Distance: ");
     Serial.println(ultrasonic_distance);
     Serial.print("Temperature: ");
@@ -81,7 +81,9 @@ void loop(){
     Serial.print("Humidity: ");
     Serial.println(humidity);
     
-    // Check conditions
+    /* 
+        Check conditions
+    */
 
     // If the conditions inside the lab are not hazardous
     if(!is_hazardous(temperature, humidity)){
@@ -89,21 +91,17 @@ void loop(){
         Serial.println("Non-hazardous");
         
         // If someone is in close range of door
-        if(is_in_range(ultrasonic_distance)){
-            //Serial.println("door opening");
+        if(is_in_range(ultrasonic_distance))
             door_actions(true);
-        }
-
+        
         // If no one in range, close the door
-        else{
-            //Serial.println("door closing");
+        else
             door_actions(false);
-        }
+        
     }
 
     // If conditions in lab are hazardous
     else{
-        //Serial.println("Hazardous");
         // Keep the door closed
         door_actions(false);
     }
@@ -113,78 +111,67 @@ void loop(){
 }
 
 bool is_hazardous(double temperature, double humidity){
-    // Safe condition is when temperature is between HAZARD_MIN_TEMP and HAZARD_MAX_TEMP.
+    /* 
+        Safe condition is when temperature is between HAZARD_MIN_TEMP and HAZARD_MAX_TEMP, and
+        the humidity is between HAZARD_MIN_HUMIDITY and HAZARD_MAX_HUMIDITY
+        
+    */
     return !(
         temperature > HAZARD_MIN_TEMP && temperature < HAZARD_MAX_TEMP |
         humidity > HAZARD_MIN_HUMIDITY && humidity < HAZARD_MAX_HUMIDITY
-        );
+    );
 }
 
 bool is_in_range(double ultrasonic_distance){
+
     // If the distance is less than ULTRASONIC_MAX_DISTANCE, return true
     return (ultrasonic_distance < ULTRASONIC_MAX_DISTANCE);
 }
 
 // Action funcitons
+
 void door_actions(bool doorOpen){
+
+    // If door is closed
     if(isDoorClosed){
-        // If door is closed, open it
+
+        // Open door
         if(doorOpen){
             openDoor();
             isDoorClosed = false;
         }
-        else{
-            // If door is already closed state and it is requested to close, do nothing
-        }
+        
+        /* 
+            If door is already closed state and it is requested to close, 
+            do nothing.
+        */
     }
     
     else{
+
+        // Close door
         if(!doorOpen){
             closeDoor();
             isDoorClosed = true;
         }
-        else{
-            // If door is already open state and it is requested to open, do nothing
-        }
+        
+        /*
+            If door is already open state and it is requested to open, 
+            do nothing.
+        */
     }
 }
 
 void openDoor()
-{   
-    if(USING_SERVO_MOTOR)
-    {
-        Serial.println("Opening door");
-        servo_open();
-    }
-    else{
-        // Open the door
-        Serial.println("Opening door");
-        digitalWrite(MOTOR_PIN1, HIGH);
-        digitalWrite(MOTOR_PIN2, LOW);
-        delay(MOTOR_DELAY);
-        digitalWrite(MOTOR_PIN1, LOW);
-        Serial.println("Door opened");
-
-    }
+{  
+    Serial.println("Opening door");
+    servo_open();   
 }
 
 void closeDoor()
 {
-    if(USING_SERVO_MOTOR)
-    {
-        Serial.println("Closing door");
-        servo_close();
-    }
-    else{
-        // Close the door
-
-        Serial.println("Closing door");
-        digitalWrite(MOTOR_PIN2, HIGH);
-        digitalWrite(MOTOR_PIN1, LOW);
-        delay(MOTOR_DELAY);
-        digitalWrite(MOTOR_PIN2, LOW);
-        Serial.println("Door closed");
-    }
+    Serial.println("Closing door");
+    servo_close(); 
 }
 
 void servo_open(){
@@ -238,14 +225,6 @@ long microsecondsToCentimeters(long microseconds)
 }
 
 // Init funcitons
-// void init_temperature(){
-//     pinMode(TEMPERATURE_SENSOR_PIN, INPUT);
-// }
-void init_motor()
-{
-	pinMode(MOTOR_PIN1, OUTPUT);
-	pinMode(MOTOR_PIN2, OUTPUT);
-}
 void init_ultrasonic()
 {
     pinMode(ULTRASONIC_TRIGGER_PIN, OUTPUT);
