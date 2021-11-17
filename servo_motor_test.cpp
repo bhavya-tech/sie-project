@@ -38,12 +38,12 @@ bool isDoorClosed = true;
 
 Servo servoMotor;
 
-void servo_setup(){
+void init_servo(){
     servoMotor.attach(SERVO_MOTOR_PIN);
 }
 
 void setup(){
-    servo_setup();
+    init_servo();
     Serial.begin(9600);
 }
 

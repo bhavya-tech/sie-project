@@ -3,6 +3,8 @@
 #define MOTOR_PIN1 5
 #define MOTOR_PIN2 6
 
+#define SERVO_MOTOR_PIN 6
+
 // Ultrasonic
 #define ULTRASONIC_TRIGGER_PIN 8
 #define ULTRASONIC_ECHO_PIN 7
@@ -18,16 +20,19 @@
 // Other Constants
 #define MOTOR_DELAY 1000
 #define HAZARD_MIN_TEMP 20
-#define HAZARD_MAX_TEMP 27
-#define HAZARD_MIN_HUMIDITY 40
+#define HAZARD_MAX_TEMP 30
+#define HAZARD_MIN_HUMIDITY 30
 #define HAZARD_MAX_HUMIDITY 50
-#define ULTRASONIC_MAX_DISTANCE 50
+#define ULTRASONIC_MAX_DISTANCE 20
+
 
 /////////////////////////////////////////
 
 /////////////////////////////////////////
 
-#define USING_SERVO_MOTOR true
+#define USING_SERVO_MOTOR 1
+
+#define LOOP_DELAY_MS 1000
 
 //Global Variables
 
@@ -47,7 +52,7 @@ Servo servoMotor;
 
 void setup(){
 
-    init_motor();
+    init_servo();
     init_ultrasonic();
     //init_temperature();
     init_dht();
@@ -80,25 +85,30 @@ void loop(){
 
     // If the conditions inside the lab are not hazardous
     if(!is_hazardous(temperature, humidity)){
+
+        Serial.println("Non-hazardous");
         
         // If someone is in close range of door
         if(is_in_range(ultrasonic_distance)){
+            //Serial.println("door opening");
             door_actions(true);
         }
 
         // If no one in range, close the door
         else{
+            //Serial.println("door closing");
             door_actions(false);
         }
     }
 
     // If conditions in lab are hazardous
     else{
+        //Serial.println("Hazardous");
         // Keep the door closed
         door_actions(false);
     }
 
-    delay(500);        
+    delay(LOOP_DELAY_MS);        
     
 }
 
@@ -143,6 +153,7 @@ void openDoor()
 {   
     if(USING_SERVO_MOTOR)
     {
+        Serial.println("Opening door");
         servo_open();
     }
     else{
@@ -161,6 +172,7 @@ void closeDoor()
 {
     if(USING_SERVO_MOTOR)
     {
+        Serial.println("Closing door");
         servo_close();
     }
     else{
@@ -177,10 +189,12 @@ void closeDoor()
 
 void servo_open(){
     servoMotor.write(90);
+    delay(1000);
 }
 
 void servo_close(){
     servoMotor.write(0);
+    delay(1000);
 }
 
 
@@ -239,4 +253,7 @@ void init_ultrasonic()
 }
 void init_dht(){
     dht.begin();
+}
+void init_servo(){
+    servoMotor.attach(SERVO_MOTOR_PIN);
 }
